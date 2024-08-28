@@ -6,15 +6,12 @@ import jm.task.core.jdbc.util.Util;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class UserDaoJDBCImpl implements UserDao {
 
     private Connection connection;
 
-    public UserDaoJDBCImpl() {
-
-    }
+    public UserDaoJDBCImpl() {}
 
     public void initConnection() {
         this.connection = Util.getDBConnection()
@@ -36,7 +33,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 + ");";
 
         try (PreparedStatement statement = connection.prepareStatement(createUserTableQuery)) {
-            statement.executeUpdate(createUserTableQuery);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при создании таблицы users", e);
         }
@@ -47,10 +44,10 @@ public class UserDaoJDBCImpl implements UserDao {
             initConnection();
         }
 
-        String dropUserTableQuery = "DROP TABLE IF EXISTS users";
+        String dropUserTableQuery = "DROP TABLE IF EXISTS users;";
 
         try (PreparedStatement statement = connection.prepareStatement(dropUserTableQuery)) {
-            statement.executeUpdate(dropUserTableQuery);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при удалении таблицы users", e);
         }
@@ -61,17 +58,16 @@ public class UserDaoJDBCImpl implements UserDao {
             initConnection();
         }
 
-        String addUserQuery = "INSERT INTO first_project_schema.users "
-                + "(id, name, lastName, age) "
-                + "VALUES (?, ?, ?, ?)"
-                + " ON DUPLICATE KEY UPDATE "
-                + " name = ?, lastName = ?, age = ?;";
+        String addUserQuery = "INSERT INTO users "
+                + "(name, lastName, age) "
+                + "VALUES (?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(addUserQuery)) {
             statement.setString(1, name);
             statement.setString(2, lastName);
             statement.setByte(3, age);
-            statement.executeUpdate(addUserQuery);
+            statement.executeUpdate();
+            System.out.println("User c именем " + name + " добавлен в базу данных");
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при добавлении пользователя в таблицу users", e);
         }
@@ -82,11 +78,11 @@ public class UserDaoJDBCImpl implements UserDao {
             initConnection();
         }
 
-        String removeUserByIdQuery = "DELETE FROM users WHERE id = ?";
+        String removeUserByIdQuery = "DELETE FROM users WHERE id = ?;";
 
         try (PreparedStatement statement = connection.prepareStatement(removeUserByIdQuery)) {
             statement.setLong(1, id);
-            statement.executeQuery(removeUserByIdQuery);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при удалении пользавателя из таблицы users", e);
         }
@@ -97,16 +93,16 @@ public class UserDaoJDBCImpl implements UserDao {
             initConnection();
         }
 
+        String getAllUsersQuery = "SELECT * FROM users;";
         List<User> users = new ArrayList<>();
-        String getAllUsersQuery = "SELECT * FROM users";
 
         try (PreparedStatement statement = connection.prepareStatement(getAllUsersQuery)) {
-            ResultSet resultSet = statement.executeQuery(getAllUsersQuery);
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getLong("id"));
                 user.setName(resultSet.getString("name"));
-                user.setName(resultSet.getString("lastName"));
+                user.setLastName(resultSet.getString("lastName"));
                 user.setAge(resultSet.getByte("age"));
                 users.add(user);
             }
@@ -121,6 +117,12 @@ public class UserDaoJDBCImpl implements UserDao {
             initConnection();
         }
 
+        String cleanUsersTableQuery = "TRUNCATE TABLE users;";
 
+        try (PreparedStatement statement = connection.prepareStatement(cleanUsersTableQuery)) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при очистке таблицы users", e);
+        }
     }
 }

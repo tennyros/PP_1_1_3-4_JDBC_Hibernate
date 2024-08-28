@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class Util {
-    // реализуйте настройку соеденения с БД
 
     private static final String URL = "jdbc:mysql://localhost:3306/first_project_schema";
     private static final String USERNAME = "root";
@@ -20,7 +19,7 @@ public class Util {
     public static Optional<Connection> getDBConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            return Optional.ofNullable(DriverManager.getConnection(URL, USERNAME, PASSWORD));
+            return Optional.of(DriverManager.getConnection(URL, USERNAME, PASSWORD));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Ошибка загрузки драйвера базы данных", e);
         } catch (SQLException e) {
