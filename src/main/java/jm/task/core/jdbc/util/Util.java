@@ -4,9 +4,10 @@ import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,9 +30,9 @@ public class Util {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return Optional.of(DriverManager.getConnection(
-                    PropertiesUtil.get(URL_KEY),
-                    PropertiesUtil.get(USERNAME_KEY),
-                    PropertiesUtil.get(PASSWORD_KEY)));
+                    JDBCPropertiesUtil.get(URL_KEY),
+                    JDBCPropertiesUtil.get(USERNAME_KEY),
+                    JDBCPropertiesUtil.get(PASSWORD_KEY)));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Ошибка загрузки драйвера базы данных", e);
         } catch (SQLException e) {
@@ -39,30 +40,26 @@ public class Util {
         }
     }
 
-    public static Optional<SessionFactory> getSessionFactory() {
+    public static SessionFactory getHibernateSessionFactory() {
         if (sessionFactory == null) {
-            try {
-                Configuration configuration = getConfiguration();
+            try (InputStream input = Util.class.getClassLoader().getResourceAsStream("hibernate.properties")) {
+                Properties properties = new Properties();
+                properties.load(input);
+                properties.forEach((key, value) -> System.out.println(key + " : " + value));
+                Configuration configuration = new Configuration();
                 configuration.addAnnotatedClass(User.class);
+                configuration.addProperties(properties);
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                        .applySettings(configuration.getProperties()).build();
+                        .applySettings(configuration.getProperties())
+                        .build();
                 sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            } catch (IOException e) {
+                throw new RuntimeException("Ошибка при работе с файлом hibernate.properties", e);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Ошибка при создании ServiceFactory", e);
             }
         }
-        return Optional.of(sessionFactory);
-    }
-
-    private static Configuration getConfiguration() {
-        Configuration configuration = new Configuration();
-        Properties properties = new Properties();
-        properties.put(Environment.DRIVER, "hibernate.connection.driver_class");
-        properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
-        properties.put(Environment.URL, "hibernate.connection.url");
-        properties.put(Environment.USER, "hibernate.connection.username");
-        properties.put(Environment.PASS, "hibernate.connection.password");
-        configuration.setProperties(properties);
-        return configuration;
+        return sessionFactory;
     }
 }
+

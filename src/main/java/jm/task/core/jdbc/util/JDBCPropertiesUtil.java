@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public final class PropertiesUtil {
+public final class JDBCPropertiesUtil {
     
     private static final Properties PROPERTIES = new Properties();
 
@@ -22,7 +22,7 @@ public final class PropertiesUtil {
     }
 
     private static void loadProperties() {
-        try (InputStream is = PropertiesUtil.class
+        try (InputStream is = JDBCPropertiesUtil.class
                 .getClassLoader()
                 .getResourceAsStream("jdbc.properties")) {
             PROPERTIES.load(is);

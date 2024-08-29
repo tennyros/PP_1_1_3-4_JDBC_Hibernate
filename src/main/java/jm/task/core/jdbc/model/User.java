@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="users", schema="first_project_schema")
 public class User {
+
     @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,9 +24,10 @@ public class User {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
+    @NotNull
     @Column(name = "age", nullable = false)
     @Min(value = 1, message = "Возраст пользователя должен быть больше 1")
-    @Max(value = 150, message = "Возраст пользователя скорее всего должен быть меньше или равен 150")
+    @Max(value = 150, message = "Возраст пользователя скорее всего должен быть меньше 150")
     private Byte age;
 
     public User() {
