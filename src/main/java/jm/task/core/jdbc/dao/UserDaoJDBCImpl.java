@@ -14,7 +14,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {}
 
     private void initConnection() {
-        this.connection = Util.getDBConnection()
+        this.connection = Util.getJDBCConnection()
                 .orElseThrow(()
                         -> new RuntimeException(
                         "Не удалось установить соединение к базе данных"));

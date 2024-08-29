@@ -24,7 +24,7 @@ public final class PropertiesUtil {
     private static void loadProperties() {
         try (InputStream is = PropertiesUtil.class
                 .getClassLoader()
-                .getResourceAsStream("application.properties")) {
+                .getResourceAsStream("jdbc.properties")) {
             PROPERTIES.load(is);
         } catch (IOException e) {
             throw new RuntimeException(e);

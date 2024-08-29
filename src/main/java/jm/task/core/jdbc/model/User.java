@@ -1,21 +1,31 @@
 package jm.task.core.jdbc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
-@Table
+import javax.persistence.*;
+
+@Entity
+@Table(name="users", schema="first_project_schema")
 public class User {
     @Id
+    @NotNull
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id", updatable = false, unique = true)
     private Long id;
 
-    @Column
+    @NotNull
+    @Column(name = "name", length = 50)
     private String name;
 
-    @Column
+    @NotNull
+    @Column(name = "last_name", length = 50)
     private String lastName;
 
-    @Column
+    @Column(name = "age", nullable = false)
+    @Min(value = 1, message = "Возраст пользователя должен быть больше 1")
+    @Max(value = 150, message = "Возраст пользователя скорее всего должен быть меньше или равен 150")
     private Byte age;
 
     public User() {
