@@ -5,7 +5,6 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import java.util.List;
 import java.util.function.Function;
@@ -100,13 +99,13 @@ public class UserDaoHibernateImpl implements UserDao {
             result = operation.apply(session);
             transaction.commit();
         } catch (Exception e) {
-            try {
-                if (transaction != null) {
+            if (transaction != null) {
+                try {
                     transaction.rollback();
+                } catch (Exception rollbackException) {
+                    System.err.println("Ошибка при откате транзакции: "
+                            + rollbackException.getMessage());
                 }
-            } catch (Exception rollbackException) {
-                System.err.println("Ошибка при откате транзакции: "
-                        + rollbackException.getMessage());
             }
             throw new RuntimeException("Ошибка при обработке DML или DQL запроса", e);
         }
