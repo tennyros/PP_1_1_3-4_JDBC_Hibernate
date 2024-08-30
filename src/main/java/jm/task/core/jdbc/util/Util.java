@@ -28,13 +28,13 @@ public class Util {
 
     public static SessionFactory getHibernateSessionFactory() {
         if (sessionFactory == null) {
-            try (InputStream input = Util.class.getClassLoader()
-                    .getResourceAsStream("hibernate.properties")) {
+            try {
                 Properties properties = new Properties();
-                properties.load(input);
-
-                envVariablesHandle(properties);
-
+                properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+                properties.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+                properties.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/first_project_schema");
+                properties.setProperty("hibernate.connection.username", System.getenv("DB_USERNAME"));
+                properties.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
                 Configuration configuration = new Configuration()
                         .addAnnotatedClass(User.class)
                         .addProperties(properties);
@@ -42,23 +42,11 @@ public class Util {
                         .applySettings(configuration.getProperties())
                         .build();
                 sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-            } catch (IOException e) {
-                throw new RuntimeException("Ошибка при работе с файлом hibernate.properties", e);
             } catch (Exception e) {
                 throw new RuntimeException("Ошибка при создании ServiceFactory", e);
             }
         }
         return sessionFactory;
-    }
-
-    private static void envVariablesHandle(Properties properties) {
-        String dbUsername = System.getenv("DB_USERNAME");
-        String dbPassword = System.getenv("DB_PASSWORD");
-        if (dbUsername == null && dbPassword == null) {
-            throw new RuntimeException("Не установлены переменные окружения - DB_USERNAME и(или) DB_PASSWORD");
-        }
-        properties.setProperty("hibernate.connection.username", dbUsername);
-        properties.setProperty("hibernate.connection.password", dbPassword);
     }
 
     public static void sessionFactoryClose() {
