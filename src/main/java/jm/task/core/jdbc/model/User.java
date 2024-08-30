@@ -1,9 +1,5 @@
 package jm.task.core.jdbc.model;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-
 import javax.persistence.*;
 
 @Entity
@@ -11,23 +7,17 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @NotNull
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", updatable = false, unique = true)
     private Long id;
 
-    @NotNull
-    @Column(name = "name", length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @NotNull
-    @Column(name = "last_name", length = 50)
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @NotNull
     @Column(name = "age", nullable = false)
-    @Min(value = 1, message = "Возраст пользователя должен быть больше 1")
-    @Max(value = 150, message = "Возраст пользователя скорее всего должен быть меньше 150")
     private Byte age;
 
     public User() {

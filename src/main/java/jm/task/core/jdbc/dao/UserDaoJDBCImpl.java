@@ -26,10 +26,10 @@ public class UserDaoJDBCImpl implements UserDao {
             initConnection();
         }
         String createUserTableQuery = "CREATE TABLE IF NOT EXISTS users ("
-                + "id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, "
+                + "id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT, "
                 + "name VARCHAR(50) NOT NULL, "
                 + "lastName VARCHAR(50) NOT NULL, "
-                + "age TINYINT UNSIGNED NOT NULL CHECK (age >= 0 AND age <= 150)"
+                + "age TINYINT UNSIGNED NOT NULL CHECK (age >= 0 AND age <= 127)"
                 + ");";
         try (PreparedStatement statement = connection.prepareStatement(createUserTableQuery)) {
             statement.executeUpdate();
@@ -58,7 +58,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
         String addUserQuery = "INSERT INTO users "
                 + "(name, lastName, age) "
-                + "VALUES (?, ?, ?)";
+                + "VALUES (?, ?, ?);";
         try (PreparedStatement statement = connection.prepareStatement(addUserQuery)) {
             statement.setString(1, name);
             statement.setString(2, lastName);
