@@ -17,7 +17,7 @@ public class Util {
     private static SessionFactory sessionFactory;
 
     private static final String URL = "jdbc:mysql://localhost:3306/first_project_schema";
-    private static final String USERNAME = "root";
+    private static final String USERNAME = System.getenv("DB_USERNAME");
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     private Util() {
@@ -27,12 +27,7 @@ public class Util {
     public static SessionFactory getHibernateSessionFactory() {
         if (sessionFactory == null) {
             try {
-                Properties properties = new Properties();
-                properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-                properties.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-                properties.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/first_project_schema");
-                properties.setProperty("hibernate.connection.username", System.getenv("DB_USERNAME"));
-                properties.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
+                Properties properties = getProperties();
                 Configuration configuration = new Configuration()
                         .addAnnotatedClass(User.class)
                         .addProperties(properties);
@@ -45,6 +40,16 @@ public class Util {
             }
         }
         return sessionFactory;
+    }
+
+    private static Properties getProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+        properties.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+        properties.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/first_project_schema");
+        properties.setProperty("hibernate.connection.username", USERNAME);
+        properties.setProperty("hibernate.connection.password", PASSWORD);
+        return properties;
     }
 
     public static void sessionFactoryClose() {
