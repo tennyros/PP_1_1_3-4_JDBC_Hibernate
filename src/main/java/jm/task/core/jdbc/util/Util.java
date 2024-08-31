@@ -17,6 +17,7 @@ public class Util {
     private static SessionFactory sessionFactory;
 
     private static final String URL = "jdbc:mysql://localhost:3306/first_project_schema";
+    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String USERNAME = System.getenv("DB_USERNAME");
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
@@ -45,8 +46,8 @@ public class Util {
     private static Properties getProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-        properties.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        properties.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/first_project_schema");
+        properties.setProperty("hibernate.connection.driver_class", DRIVER);
+        properties.setProperty("hibernate.connection.url", URL);
         properties.setProperty("hibernate.connection.username", USERNAME);
         properties.setProperty("hibernate.connection.password", PASSWORD);
         return properties;
@@ -60,7 +61,7 @@ public class Util {
 
     public static Optional<Connection> getJDBCConnection() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName(DRIVER);
             return Optional.of(DriverManager.getConnection(URL, USERNAME, PASSWORD));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Ошибка загрузки драйвера базы данных", e);
